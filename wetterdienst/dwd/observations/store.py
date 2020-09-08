@@ -8,7 +8,6 @@ from wetterdienst.dwd.metadata.constants import (
     DWD_FOLDER_STATION_DATA,
     DWD_FILE_STATION_DATA,
     DataFormat,
-)
 
 
 def store_climate_observations(
