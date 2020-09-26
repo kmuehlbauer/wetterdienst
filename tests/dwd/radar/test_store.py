@@ -1,4 +1,6 @@
 from datetime import datetime
+from pathlib import PurePath
+
 from wetterdienst import TimeResolution
 from wetterdienst.dwd.metadata.constants import DWD_FOLDER_MAIN
 from wetterdienst.dwd.radar.metadata import RadarParameter
@@ -14,4 +16,4 @@ def test_build_local_filepath_for_radar():
         TimeResolution.MINUTE_5,
     )
 
-    assert "dx/5_minutes/dx_5_minutes_202001011215" in str(radar_filepath)
+    assert str(PurePath("dx/5_minutes/dx_5_minutes_202001011215")) in str(radar_filepath)
