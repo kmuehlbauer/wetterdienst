@@ -11,7 +11,7 @@ from wetterdienst.dwd.observations.stations import (
     get_nearby_stations_by_number,
     get_nearby_stations_by_distance,
 )
-from wetterdienst.dwd.radolan.api import DWDRadolanRequest
+from wetterdienst.dwd.radar.api import DWDRadarRequest
 
 # Single-sourcing the package version
 # https://cjolowicz.github.io/posts/hypermodern-python-06-ci-cd/
