@@ -16,4 +16,6 @@ def test_build_local_filepath_for_radar():
         TimeResolution.MINUTE_5,
     )
 
-    assert str(PurePath("dx/5_minutes/dx_5_minutes_202001011215")) in str(radar_filepath)
+    assert str(PurePath("dx/5_minutes/dx_5_minutes_202001011215")) in str(
+        radar_filepath
+    )

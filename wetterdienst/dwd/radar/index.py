@@ -128,7 +128,22 @@ def build_path_to_parameter(
     radar_data_type: Optional[RadarDataType] = None,
 ) -> str:
     """
-    Function to build a indexing file path
+    Function to build a indexing file path.
+    Supports composite- and site-based radar data.
+
+    Composites
+    ----------
+    - https://opendata.dwd.de/climate_environment/CDC/grids_germany/5_minutes/radolan/
+    - https://opendata.dwd.de/climate_environment/CDC/grids_germany/daily/radolan/
+    - https://opendata.dwd.de/climate_environment/CDC/grids_germany/hourly/radolan/
+    - https://opendata.dwd.de/weather/radar/composit/
+    - https://opendata.dwd.de/weather/radar/radolan/
+
+    Sites
+    -----
+    - https://opendata.dwd.de/weather/radar/sites/
+
+
     Args:
         parameter: observation measure
         time_resolution: frequency/granularity of measurement interval
@@ -143,7 +158,7 @@ def build_path_to_parameter(
         parameter_path = f"{DWD_CDC_PATH}/grids_germany/{time_resolution.value}/{parameter.value}/{period_type.value}"  # noqa:E501,B950
 
     elif parameter in RADAR_PARAMETERS_COMPOSITES:
-        parameter_path = f"weather/radar/composite/{parameter.value}"
+        parameter_path = f"weather/radar/composit/{parameter.value}"
 
     elif parameter in RADAR_PARAMETERS_SITES:
         if radar_site is None:
