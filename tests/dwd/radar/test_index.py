@@ -149,7 +149,7 @@ def test_radar_fileindex_grid_daily_recent():
     urls = file_index["FILENAME"].tolist()
     assert all(
         PurePath(url).match(
-            f"*/climate_environment/CDC/grids_germany/daily/radolan/recent/bin/*---bin.gz"
+            "*/climate_environment/CDC/grids_germany/daily/radolan/recent/bin/*---bin.gz"
         )
         for url in urls
         if not url.endswith(".pdf")
@@ -167,7 +167,7 @@ def test_radar_fileindex_grid_daily_historical():
     urls = file_index["FILENAME"].tolist()
     assert all(
         PurePath(url).match(
-            f"*/climate_environment/CDC/grids_germany/daily/radolan/historical/bin/*/SF*.tar.gz"
+            "*/climate_environment/CDC/grids_germany/daily/radolan/historical/bin/*/SF*.tar.gz"
         )
         for url in urls
         if not url.endswith(".pdf")
@@ -185,7 +185,7 @@ def test_radar_fileindex_grid_hourly_recent():
     urls = file_index["FILENAME"].tolist()
     assert all(
         PurePath(url).match(
-            f"*/climate_environment/CDC/grids_germany/hourly/radolan/recent/bin/*---bin.gz"
+            "*/climate_environment/CDC/grids_germany/hourly/radolan/recent/bin/*---bin.gz"
         )
         for url in urls
         if not url.endswith(".pdf")
@@ -203,7 +203,7 @@ def test_radar_fileindex_grid_hourly_historical():
     urls = file_index["FILENAME"].tolist()
     assert all(
         PurePath(url).match(
-            f"*/climate_environment/CDC/grids_germany/hourly/radolan/historical/bin/*/RW*.tar.gz"
+            "*/climate_environment/CDC/grids_germany/hourly/radolan/historical/bin/*/RW*.tar.gz"
         )
         for url in urls
         if not url.endswith(".pdf")
@@ -222,7 +222,7 @@ def test_radar_fileindex_grid_5minutes():
         print(url)
     assert all(
         PurePath(url).match(
-            f"*/climate_environment/CDC/grids_germany/5_minutes/radolan/reproc/2017_002/bin/*/YW2017*.tar"
+            "*/climate_environment/CDC/grids_germany/5_minutes/radolan/reproc/2017_002/bin/*/YW2017*.tar"
         )
         for url in urls
         if not url.endswith(".tar.gz")

@@ -12,10 +12,11 @@ class RadarDataType(Enum):
 class RadarParameter(Enum):
 
     # Composites
-    # https://docs.wradlib.org/en/stable/notebooks/fileio/wradlib_radar_formats.html#German-Weather-Service:-RADOLAN-(quantitative)-composit
+    # https://docs.wradlib.org/en/stable/notebooks/fileio/wradlib_radar_formats.html#German-Weather-Service:-RADOLAN-(quantitative)-composit  # noqa:E501,B950
 
     # https://opendata.dwd.de/weather/radar/composit/
-    # TODO: "FX" was missing here. OTOH, "pp" doesn't seem to be present on opendata.dwd.de.
+    # TODO: "FX" was missing here. OTOH, "pp" doesn't
+    #       seem to be present on opendata.dwd.de.
     FX_REFLECTIVITY = "fx"
     PG_REFLECTIVITY = "pg"
     # PP_REFLECTIVITY = "pp"
@@ -30,7 +31,7 @@ class RadarParameter(Enum):
 
     # Sites
     # https://opendata.dwd.de/weather/radar/sites/
-    # https://docs.wradlib.org/en/stable/notebooks/fileio/wradlib_radar_formats.html#German-Weather-Service:-DX-format
+    # https://docs.wradlib.org/en/stable/notebooks/fileio/wradlib_radar_formats.html#German-Weather-Service:-DX-format  # noqa:E501,B950
     DX_REFLECTIVITY = "dx"
     LMAX_VOLUME_SCAN = "lmax"
     PE_ECHO_TOP = "pe"
