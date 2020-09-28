@@ -107,36 +107,55 @@ def _collect_generic_radar_data(
         list of tuples of a datetime and the corresponding file in bytes
     """
 
-    # data = []
+    # Find latest file.
+    if date_times[0] == RadarDate.LATEST.value:
 
-    # FIXME: Implement indexing by timestamp when needed.
-    if date_times[0] != RadarDate.LATEST.value:
-        raise NotImplementedError(
-            "Acquisition of generic radar data only supports LATEST file for now"
+        file_index = create_fileindex_radar(
+            parameter=parameter,
+            radar_site=radar_site,
+            radar_data_type=radar_data_type,
+            parse_datetime=False,
         )
 
-    file_index = create_fileindex_radar(
-        parameter=parameter,
-        radar_site=radar_site,
-        radar_data_type=radar_data_type,
-    )
+        filenames = file_index["FILENAME"].tolist()
 
-    # Find latest file.
-    filenames = file_index["FILENAME"].tolist()
+        try:
+            latest_file = list(filter(lambda x: "-latest-" in x, filenames))[0]
+        except IndexError:
+            latest_file = filenames[-1]
 
-    try:
-        latest_file = list(filter(lambda x: "-latest-" in x, filenames))[0]
-    except IndexError:
-        latest_file = filenames[-1]
+        # Make up single-entry response.
+        # TODO: Discuss which datetime to use here.
+        # TODO: Maybe decode timestamp from file header,
+        #  e.g. RX272355, RW272250, DX280005.
+        now = datetime.now()
+        payload = _download_generic_data(latest_file)
+        data = [(now, payload)]
 
-    # Make up single-entry response.
-    # TODO: Discuss which datetime to use here.
-    # TODO: Maybe decode timestamp from file header, e.g. RX272355, RW272250, DX280005
-    now = datetime.now()
-    payload = _download_generic_data(latest_file)
-    response = [(now, payload)]
+    else:
 
-    return response
+        file_index = create_fileindex_radar(
+            parameter=parameter,
+            radar_site=radar_site,
+            radar_data_type=radar_data_type,
+            parse_datetime=True,
+        )
+
+        data = []
+        for date_time in date_times:
+
+            # Filter by date.
+            fi = file_index[file_index[DWDMetaColumns.DATETIME.value] == date_time]
+
+            if fi.empty:
+                log.warning(f"No radar file found for {str(date_time)}, skipping.")
+                continue
+
+            url = fi[DWDMetaColumns.FILENAME.value].item()
+            date_time_and_file = (date_time, _download_generic_data(url))
+            data.append(date_time_and_file)
+
+    return data
 
 
 @payload_cache_five_minutes.cache_on_arguments()
@@ -183,7 +202,10 @@ def _collect_radolan_grid_data(
                     (
                         date_time,
                         restore_radar_data(
-                            RadarParameter.RADOLAN, date_time, time_resolution, folder
+                            RadarParameter.RADOLAN_GRID,
+                            date_time,
+                            time_resolution,
+                            folder,
                         ),
                     )
                 )
@@ -210,7 +232,7 @@ def _collect_radolan_grid_data(
 
         if write_file:
             store_radar_data(
-                RadarParameter.RADOLAN, date_time_and_file, time_resolution, folder
+                RadarParameter.RADOLAN_GRID, date_time_and_file, time_resolution, folder
             )
 
     return data

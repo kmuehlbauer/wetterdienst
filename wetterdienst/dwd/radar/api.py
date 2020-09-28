@@ -91,6 +91,8 @@ class DWDRadarRequest:
             )
 
         # Run on of two indexing variants, either for RADOLAN_GRID or generic RADOLAN.
+        # TODO: File index will be made twice,
+        #  consider sharing it with ``collect_data``.
         if self.radar_parameter == RadarParameter.RADOLAN_GRID:
             file_index = create_fileindex_radolan_grid(self.time_resolution)
         else:
@@ -100,6 +102,7 @@ class DWDRadarRequest:
                 period_type,
                 radar_site,
                 radar_data_type,
+                parse_datetime=False,
             )
 
         self.__build_date_times(file_index, date_times, start_date, end_date)

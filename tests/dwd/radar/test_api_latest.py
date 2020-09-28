@@ -20,8 +20,8 @@ def test_radar_request_rx_reflectivity_latest():
     payload = buffer.getvalue()
 
     header = (
-        b"RX......100000920BY 810134VS 3SW   2.28.1PR E\\+00INT   5GP 900x 900MS "
-        b"62<asb,boo,ros,hnr,umd,pro,ess,fld,drs,neu,oft,eis,tur,fbg,mem>"
+        b"RX......100000920BY 8101..VS 3SW   2.28.1PR E\\+00INT   5GP 900x 900MS "
+        b"..<asb,boo,ros,hnr,umd,pro,ess,fld,drs,neu,(nhb,)?oft,eis,tur,fbg,mem>"
     )
 
     assert re.match(header, payload)
@@ -42,11 +42,11 @@ def test_radar_request_rw_reflectivity_latest():
     payload = buffer.getvalue()
 
     header = (
-        b"RW......100000920BY1620145VS 3SW   2.28.1PR E-01INT  60GP 900x 900MF 00000001MS "  # noqa:E501,B950
-        b"62<asb,boo,ros,hnr,umd,pro,ess,fld,drs,neu,oft,eis,tur,fbg,mem>"
+        b"RW......100000920BY16201..VS 3SW   2.28.1PR E-01INT  60GP 900x 900MF 00000001MS "  # noqa:E501,B950
+        b"..<asb,boo,ros,hnr,umd,pro,ess,fld,drs,neu,(nhb,)?oft,eis,tur,fbg,mem>"
     )
 
-    assert re.match(header, payload)
+    assert re.match(header, payload), payload[:150]
 
 
 @pytest.mark.remote
