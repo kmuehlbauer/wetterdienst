@@ -9,7 +9,7 @@ from wetterdienst import TimeResolution, PeriodType
 from wetterdienst.dwd.metadata.constants import ArchiveFormat, DWD_SERVER, DWD_CDC_PATH
 from wetterdienst.dwd.metadata.column_names import DWDMetaColumns
 from wetterdienst.dwd.metadata.datetime import DatetimeFormat
-from wetterdienst.dwd.radar.sites import RadarSites
+from wetterdienst.dwd.radar.sites import RadarSite
 from wetterdienst.dwd.radar.metadata import (
     RadarParameter,
     RadarDataType,
@@ -30,7 +30,7 @@ def create_fileindex_radar(
     parameter: RadarParameter,
     time_resolution: Optional[TimeResolution] = None,
     period_type: Optional[PeriodType] = None,
-    radar_site: Optional[RadarSites] = None,
+    radar_site: Optional[RadarSite] = None,
     radar_data_type: Optional[RadarDataType] = None,
 ) -> pd.DataFrame:
     """
@@ -126,7 +126,7 @@ def build_path_to_parameter(
     parameter: RadarParameter,
     time_resolution: Optional[TimeResolution] = None,
     period_type: Optional[PeriodType] = None,
-    radar_site: Optional[RadarSites] = None,
+    radar_site: Optional[RadarSite] = None,
     radar_data_type: Optional[RadarDataType] = None,
 ) -> str:
     """

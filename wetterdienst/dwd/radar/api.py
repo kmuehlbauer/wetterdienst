@@ -14,7 +14,7 @@ from wetterdienst.dwd.radar.index import (
     create_fileindex_radar,
 )
 from wetterdienst.dwd.radar.metadata import RadarParameter, RadarDataType, RadarDate
-from wetterdienst.dwd.radar.sites import RadarSites
+from wetterdienst.dwd.radar.sites import RadarSite
 from wetterdienst.dwd.util import parse_enumeration_from_template
 
 
@@ -26,7 +26,7 @@ class DWDRadarRequest:
     def __init__(
         self,
         radar_parameter: Union[str, RadarParameter],
-        radar_site: Optional[RadarSites] = None,
+        radar_site: Optional[RadarSite] = None,
         radar_data_type: Optional[RadarDataType] = None,
         date_times: Optional[Union[str, List[Union[str, datetime]]]] = None,
         start_date: Optional[Union[str, datetime]] = None,

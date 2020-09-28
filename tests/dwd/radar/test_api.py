@@ -7,7 +7,7 @@ from pathlib import Path
 
 from wetterdienst import DWDRadarRequest, TimeResolution
 from wetterdienst.dwd.radar.metadata import RadarParameter, RadarDate
-from wetterdienst.dwd.radar.sites import RadarSites
+from wetterdienst.dwd.radar.sites import RadarSite
 
 HERE = Path(__file__).parent
 
@@ -101,7 +101,7 @@ def test_radar_request_dx_reflectivity_latest():
     request = DWDRadarRequest(
         radar_parameter=RadarParameter.DX_REFLECTIVITY,
         date_times=RadarDate.LATEST.value,
-        radar_site=RadarSites.BOO,
+        radar_site=RadarSite.BOO,
     )
 
     buffer = next(request.collect_data())[1]

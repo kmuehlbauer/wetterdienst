@@ -19,7 +19,7 @@ from wetterdienst.dwd.radar.metadata import (
     RadarDate,
     RadarDataType,
 )
-from wetterdienst.dwd.radar.sites import RadarSites
+from wetterdienst.dwd.radar.sites import RadarSite
 from wetterdienst.dwd.radar.store import restore_radar_data, store_radar_data
 from wetterdienst.dwd.metadata.column_names import DWDMetaColumns
 from wetterdienst.dwd.metadata.datetime import DatetimeFormat
@@ -32,7 +32,7 @@ def collect_radar_data(
     parameter: RadarParameter,
     date_times: List[datetime],
     time_resolution: TimeResolution,
-    radar_site: Optional[RadarSites] = None,
+    radar_site: Optional[RadarSite] = None,
     radar_data_type: Optional[RadarDataType] = None,
     prefer_local: bool = False,
     write_file: bool = False,
@@ -86,7 +86,7 @@ def collect_radar_data(
 def _collect_generic_radar_data(
     parameter: RadarParameter,
     date_times: List[datetime],
-    radar_site: Optional[RadarSites] = None,
+    radar_site: Optional[RadarSite] = None,
     radar_data_type: Optional[RadarDataType] = None,
 ) -> List[Tuple[datetime, BytesIO]]:
     """

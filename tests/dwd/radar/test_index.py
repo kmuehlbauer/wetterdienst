@@ -4,7 +4,7 @@ import pandas as pd
 from wetterdienst import TimeResolution, PeriodType
 from wetterdienst.dwd.metadata.column_names import DWDMetaColumns
 from wetterdienst.dwd.radar.metadata import RadarParameter, RadarDataType
-from wetterdienst.dwd.radar.sites import RadarSites
+from wetterdienst.dwd.radar.sites import RadarSite
 from wetterdienst.dwd.radar.index import (
     create_fileindex_radar,
     create_fileindex_radolan_grid,
@@ -74,7 +74,7 @@ def test_radar_fileindex_sites_px_reflectivity_bin():
 
     file_index = create_fileindex_radar(
         parameter=RadarParameter.PX_REFLECTIVITY,
-        radar_site=RadarSites.BOO,
+        radar_site=RadarSite.BOO,
         radar_data_type=RadarDataType.BINARY,
     )
 
@@ -88,7 +88,7 @@ def test_radar_fileindex_sites_px_reflectivity_bufr():
 
     file_index = create_fileindex_radar(
         parameter=RadarParameter.PX_REFLECTIVITY,
-        radar_site=RadarSites.BOO,
+        radar_site=RadarSite.BOO,
         radar_data_type=RadarDataType.BUFR,
     )
 
@@ -102,7 +102,7 @@ def test_radar_fileindex_sites_px250_reflectivity_bufr():
 
     file_index = create_fileindex_radar(
         parameter=RadarParameter.PX250_REFLECTIVITY,
-        radar_site=RadarSites.BOO,
+        radar_site=RadarSite.BOO,
     )
 
     urls = file_index["FILENAME"].tolist()
@@ -113,7 +113,7 @@ def test_radar_fileindex_sites_sweep_bufr():
 
     file_index = create_fileindex_radar(
         parameter=RadarParameter.SWEEP_VOL_VELOCITY_V,
-        radar_site=RadarSites.BOO,
+        radar_site=RadarSite.BOO,
         radar_data_type=RadarDataType.BUFR,
     )
 
@@ -128,7 +128,7 @@ def test_radar_fileindex_sites_sweep_hdf5():
 
     file_index = create_fileindex_radar(
         parameter=RadarParameter.SWEEP_VOL_VELOCITY_V,
-        radar_site=RadarSites.BOO,
+        radar_site=RadarSite.BOO,
         radar_data_type=RadarDataType.HDF5,
     )
 

@@ -109,7 +109,7 @@ RADAR_LOCATIONS = {
 """ enumeration for Radar Sites """
 
 
-class RadarSites(Enum):
+class RadarSite(Enum):
     """
     enumeration for the different radar locations/sites
     """
