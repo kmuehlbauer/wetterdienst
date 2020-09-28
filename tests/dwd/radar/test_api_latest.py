@@ -86,4 +86,4 @@ def test_radar_request_sweep_hdf5_latest():
     buffer = next(request.collect_data())[1]
     payload = buffer.getvalue()
 
-    assert payload.startswith(b'\x89HDF\r\n')
+    assert payload.startswith(b"\x89HDF\r\n")

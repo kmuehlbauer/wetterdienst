@@ -23,7 +23,10 @@ from wetterdienst.dwd.radar.sites import RadarSite
 from wetterdienst.dwd.radar.store import restore_radar_data, store_radar_data
 from wetterdienst.dwd.metadata.column_names import DWDMetaColumns
 from wetterdienst.dwd.metadata.datetime import DatetimeFormat
-from wetterdienst.util.cache import payload_cache_twelve_hours, payload_cache_five_minutes
+from wetterdienst.util.cache import (
+    payload_cache_twelve_hours,
+    payload_cache_five_minutes,
+)
 
 log = logging.getLogger(__name__)
 
@@ -122,9 +125,7 @@ def _collect_generic_radar_data(
     filenames = file_index["FILENAME"].tolist()
 
     try:
-        latest_file = list(
-            filter(lambda x: "-latest-" in x, filenames)
-        )[0]
+        latest_file = list(filter(lambda x: "-latest-" in x, filenames))[0]
     except IndexError:
         latest_file = filenames[-1]
 
