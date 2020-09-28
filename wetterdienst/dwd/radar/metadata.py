@@ -1,6 +1,11 @@
 from enum import Enum
 
 
+class RadarDate(Enum):
+
+    LATEST = "latest"
+
+
 class RadarDataType(Enum):
     """ Enumeration for different Radar Data Types"""
 
@@ -55,6 +60,19 @@ class RadarParameter(Enum):
     RADOLAN_GRID = "radolan_grid"
 
 
+RADAR_PARAMETERS_COMPOSITES = [
+    # RadarParameter.PP_REFLECTIVITY,
+    RadarParameter.FX_REFLECTIVITY,
+    RadarParameter.PG_REFLECTIVITY,
+    RadarParameter.WX_REFLECTIVITY,
+    RadarParameter.WN_REFLECTIVITY,
+    RadarParameter.RX_REFLECTIVITY,
+]
+RADAR_PARAMETERS_RADOLAN = [
+    RadarParameter.RW_REFLECTIVITY,
+    RadarParameter.RY_REFLECTIVITY,
+    RadarParameter.SF_REFLECTIVITY,
+]
 RADAR_PARAMETERS_SITES = [
     RadarParameter.DX_REFLECTIVITY,
     RadarParameter.LMAX_VOLUME_SCAN,
@@ -70,22 +88,9 @@ RADAR_PARAMETERS_SITES = [
     RadarParameter.SWEEP_VOL_VELOCITY_V,
     RadarParameter.SWEEP_VOL_VELOCITY_Z,
 ]
-RADAR_PARAMETERS_COMPOSITES = [
-    # RadarParameter.PP_REFLECTIVITY,
-    RadarParameter.FX_REFLECTIVITY,
-    RadarParameter.PG_REFLECTIVITY,
-    RadarParameter.WX_REFLECTIVITY,
-    RadarParameter.WN_REFLECTIVITY,
-    RadarParameter.RX_REFLECTIVITY,
-]
 RADAR_PARAMETERS_WITH_HDF5 = [
     RadarParameter.SWEEP_VOL_PRECIPITATION_V,
     RadarParameter.SWEEP_VOL_PRECIPITATION_Z,
     RadarParameter.SWEEP_VOL_VELOCITY_V,
     RadarParameter.SWEEP_VOL_VELOCITY_Z,
-]
-RADAR_PARAMETERS_RADOLAN = [
-    RadarParameter.RW_REFLECTIVITY,
-    RadarParameter.RY_REFLECTIVITY,
-    RadarParameter.SF_REFLECTIVITY,
 ]

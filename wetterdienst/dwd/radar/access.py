@@ -4,14 +4,22 @@ import tarfile
 from datetime import datetime
 from io import BytesIO
 from pathlib import Path
-from typing import Tuple, List, Union
+from typing import Tuple, List, Union, Optional
 
 from wetterdienst import TimeResolution
 from wetterdienst.dwd.metadata.constants import DWD_FOLDER_MAIN
 
 from wetterdienst.dwd.network import download_file_from_dwd
-from wetterdienst.dwd.radar.index import create_file_index_for_radolan
-from wetterdienst.dwd.radar.metadata import RadarParameter
+from wetterdienst.dwd.radar.index import (
+    create_fileindex_radolan_grid,
+    create_fileindex_radar,
+)
+from wetterdienst.dwd.radar.metadata import (
+    RadarParameter,
+    RadarDate,
+    RadarDataType,
+)
+from wetterdienst.dwd.radar.sites import RadarSites
 from wetterdienst.dwd.radar.store import restore_radar_data, store_radar_data
 from wetterdienst.dwd.metadata.column_names import DWDMetaColumns
 from wetterdienst.dwd.metadata.datetime import DatetimeFormat
@@ -24,17 +32,22 @@ def collect_radar_data(
     parameter: RadarParameter,
     date_times: List[datetime],
     time_resolution: TimeResolution,
+    radar_site: Optional[RadarSites] = None,
+    radar_data_type: Optional[RadarDataType] = None,
     prefer_local: bool = False,
     write_file: bool = False,
     folder: Union[str, Path] = DWD_FOLDER_MAIN,
 ) -> List[Tuple[datetime, BytesIO]]:
     """
-    Function used to collect Radar data for given datetimes and a time resolution.
-    Additionally the file can be written to a local folder and read from there as well.
+    Collect radar data for given datetimes and a time resolution.
+    Additionally, the file can be written to a local folder and read from there as well.
+
     Args:
         parameter: What type of radar data should be collected
         date_times: list of datetime objects for which radar data shall be acquired
         time_resolution: the time resolution for requested data, either hourly or daily
+        radar_site:      Site of the radar if parameter is one of RADAR_PARAMETERS_SITES
+        radar_data_type: Some radar data are available in different data types
         prefer_local: boolean if file should be read from local store instead
         write_file: boolean if file should be stored on the drive
         folder: path for storage
@@ -42,25 +55,85 @@ def collect_radar_data(
     Returns:
         list of tuples of a datetime and the corresponding file in bytes
     """
-    if time_resolution not in (
-        TimeResolution.HOURLY,
-        TimeResolution.DAILY,
-        TimeResolution.MINUTE_5,
-        TimeResolution.MINUTE_15,
-    ):
-        raise ValueError("Wrong TimeResolution for RadarData")
 
-    if parameter == RadarParameter.RADOLAN:
-        return _collect_radolan_data(
-            date_times, time_resolution, prefer_local, write_file, folder
+    if parameter == RadarParameter.RADOLAN_GRID:
+
+        if time_resolution not in (
+            TimeResolution.HOURLY,
+            TimeResolution.DAILY,
+            TimeResolution.MINUTE_5,
+            TimeResolution.MINUTE_15,
+        ):
+            raise ValueError("Wrong TimeResolution for RadarData")
+
+        return _collect_radolan_grid_data(
+            date_times=date_times,
+            time_resolution=time_resolution,
+            prefer_local=prefer_local,
+            write_file=write_file,
+            folder=folder,
         )
+
     else:
-        raise ValueError(
-            "You have passed a non valid radar data Parameter. " "Valid Radar data:"
+        return _collect_generic_radar_data(
+            parameter=parameter,
+            date_times=date_times,
+            radar_site=radar_site,
+            radar_data_type=radar_data_type,
         )
 
 
-def _collect_radolan_data(
+def _collect_generic_radar_data(
+    parameter: RadarParameter,
+    date_times: List[datetime],
+    radar_site: Optional[RadarSites] = None,
+    radar_data_type: Optional[RadarDataType] = None,
+) -> List[Tuple[datetime, BytesIO]]:
+    """
+    Collect raw radar data for COMPOSITE and SITES.
+
+    Remark: As of now, only the LATEST file (like "raa00-dx_10132-latest-boo---bin")
+            will be acquired.
+
+    Args:
+        parameter: What type of radar data should be collected
+        date_times: list of datetime objects for which RADOLAN shall be acquired
+        radar_site:      Site of the radar if parameter is one of RADAR_PARAMETERS_SITES
+        radar_data_type: Some radar data are available in different data types
+    Returns:
+        list of tuples of a datetime and the corresponding file in bytes
+    """
+
+    # data = []
+
+    # FIXME: Implement indexing by timestamp when needed.
+    if date_times[0] != RadarDate.LATEST.value:
+        raise NotImplementedError(
+            "Acquisition of generic radar data only supports LATEST file for now"
+        )
+
+    file_index = create_fileindex_radar(
+        parameter=parameter,
+        radar_site=radar_site,
+        radar_data_type=radar_data_type,
+    )
+
+    # Find latest file.
+    latest_file = list(
+        filter(lambda x: "-latest-" in x, file_index["FILENAME"].tolist())
+    )[0]
+
+    # Make up single-entry response.
+    # TODO: Discuss which datetime to use here.
+    # TODO: Maybe decode timestamp from file header, e.g. RX272355, RW272250, DX280005
+    now = datetime.now()
+    payload = download_file_from_dwd(latest_file)
+    response = [(now, payload)]
+
+    return response
+
+
+def _collect_radolan_grid_data(
     date_times: List[datetime],
     time_resolution: TimeResolution,
     prefer_local: bool = False,
@@ -68,8 +141,9 @@ def _collect_radolan_data(
     folder: Union[str, Path] = DWD_FOLDER_MAIN,
 ) -> List[Tuple[datetime, BytesIO]]:
     """
-    Function used to collect RADOLAN data for given datetimes and a time resolution.
-    Additionally the file can be written to a local folder and read from there as well.
+    Collect RADOLAN_GRID data for given datetimes and time resolution.
+    Additionally, the file can be written to a local folder and read from there as well.
+
     Args:
         date_times: list of datetime objects for which RADOLAN shall be acquired
         time_resolution: the time resolution for requested data, either hourly or daily
@@ -104,7 +178,6 @@ def _collect_radolan_data(
         remote_radolan_file_path = create_filepath_for_radolan(
             date_time, time_resolution
         )
-        print("remote_radolan_file_path:", remote_radolan_file_path)
 
         if remote_radolan_file_path == "":
             log.warning(f"RADOLAN not found for {str(date_time)}, will be skipped.")
@@ -219,7 +292,7 @@ def create_filepath_for_radolan(
     Returns:
         a string, either empty if non found or with the relative path to the file
     """
-    file_index = create_file_index_for_radolan(time_resolution)
+    file_index = create_fileindex_radolan_grid(time_resolution)
 
     if date_time in file_index[DWDMetaColumns.DATETIME.value].tolist():
         file_index = file_index[file_index[DWDMetaColumns.DATETIME.value] == date_time]

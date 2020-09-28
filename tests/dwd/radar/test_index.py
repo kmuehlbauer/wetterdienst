@@ -1,15 +1,19 @@
 import pytest
 from pathlib import PurePath
-
+import pandas as pd
 from wetterdienst import TimeResolution, PeriodType
+from wetterdienst.dwd.metadata.column_names import DWDMetaColumns
 from wetterdienst.dwd.radar.metadata import RadarParameter, RadarDataType
 from wetterdienst.dwd.radar.sites import RadarSites
-from wetterdienst.dwd.radar.index import _create_fileindex_radar
+from wetterdienst.dwd.radar.index import (
+    create_fileindex_radar,
+    create_fileindex_radolan_grid,
+)
 
 
 def test_radar_fileindex_composite_pg_reflectivity_bin():
 
-    file_index = _create_fileindex_radar(
+    file_index = create_fileindex_radar(
         parameter=RadarParameter.PG_REFLECTIVITY,
         radar_data_type=RadarDataType.BINARY,
     )
@@ -22,7 +26,7 @@ def test_radar_fileindex_composite_pg_reflectivity_bin():
 
 def test_radar_fileindex_composite_pg_reflectivity_bufr():
 
-    file_index = _create_fileindex_radar(
+    file_index = create_fileindex_radar(
         parameter=RadarParameter.PG_REFLECTIVITY,
         radar_data_type=RadarDataType.BUFR,
     )
@@ -35,7 +39,7 @@ def test_radar_fileindex_composite_pg_reflectivity_bufr():
 
 def test_radar_fileindex_composite_rx_reflectivity_bin():
 
-    file_index = _create_fileindex_radar(
+    file_index = create_fileindex_radar(
         parameter=RadarParameter.RX_REFLECTIVITY,
     )
 
@@ -55,7 +59,7 @@ def test_radar_fileindex_composite_rx_reflectivity_bin():
 )
 def test_radar_fileindex_radolan_reflectivity_bin(radar_parameter):
 
-    file_index = _create_fileindex_radar(
+    file_index = create_fileindex_radar(
         parameter=radar_parameter,
     )
 
@@ -68,7 +72,7 @@ def test_radar_fileindex_radolan_reflectivity_bin(radar_parameter):
 
 def test_radar_fileindex_sites_px_reflectivity_bin():
 
-    file_index = _create_fileindex_radar(
+    file_index = create_fileindex_radar(
         parameter=RadarParameter.PX_REFLECTIVITY,
         radar_site=RadarSites.BOO,
         radar_data_type=RadarDataType.BINARY,
@@ -82,7 +86,7 @@ def test_radar_fileindex_sites_px_reflectivity_bin():
 
 def test_radar_fileindex_sites_px_reflectivity_bufr():
 
-    file_index = _create_fileindex_radar(
+    file_index = create_fileindex_radar(
         parameter=RadarParameter.PX_REFLECTIVITY,
         radar_site=RadarSites.BOO,
         radar_data_type=RadarDataType.BUFR,
@@ -96,7 +100,7 @@ def test_radar_fileindex_sites_px_reflectivity_bufr():
 
 def test_radar_fileindex_sites_px250_reflectivity_bufr():
 
-    file_index = _create_fileindex_radar(
+    file_index = create_fileindex_radar(
         parameter=RadarParameter.PX250_REFLECTIVITY,
         radar_site=RadarSites.BOO,
     )
@@ -107,7 +111,7 @@ def test_radar_fileindex_sites_px250_reflectivity_bufr():
 
 def test_radar_fileindex_sites_sweep_bufr():
 
-    file_index = _create_fileindex_radar(
+    file_index = create_fileindex_radar(
         parameter=RadarParameter.SWEEP_VOL_VELOCITY_V,
         radar_site=RadarSites.BOO,
         radar_data_type=RadarDataType.BUFR,
@@ -122,7 +126,7 @@ def test_radar_fileindex_sites_sweep_bufr():
 
 def test_radar_fileindex_sites_sweep_hdf5():
 
-    file_index = _create_fileindex_radar(
+    file_index = create_fileindex_radar(
         parameter=RadarParameter.SWEEP_VOL_VELOCITY_V,
         radar_site=RadarSites.BOO,
         radar_data_type=RadarDataType.HDF5,
@@ -140,7 +144,7 @@ def test_radar_fileindex_sites_sweep_hdf5():
 
 def test_radar_fileindex_grid_daily_recent():
 
-    file_index = _create_fileindex_radar(
+    file_index = create_fileindex_radar(
         parameter=RadarParameter.RADOLAN_GRID,
         time_resolution=TimeResolution.DAILY,
         period_type=PeriodType.RECENT,
@@ -158,7 +162,7 @@ def test_radar_fileindex_grid_daily_recent():
 
 def test_radar_fileindex_grid_daily_historical():
 
-    file_index = _create_fileindex_radar(
+    file_index = create_fileindex_radar(
         parameter=RadarParameter.RADOLAN_GRID,
         time_resolution=TimeResolution.DAILY,
         period_type=PeriodType.HISTORICAL,
@@ -176,7 +180,7 @@ def test_radar_fileindex_grid_daily_historical():
 
 def test_radar_fileindex_grid_hourly_recent():
 
-    file_index = _create_fileindex_radar(
+    file_index = create_fileindex_radar(
         parameter=RadarParameter.RADOLAN_GRID,
         time_resolution=TimeResolution.HOURLY,
         period_type=PeriodType.RECENT,
@@ -194,7 +198,7 @@ def test_radar_fileindex_grid_hourly_recent():
 
 def test_radar_fileindex_grid_hourly_historical():
 
-    file_index = _create_fileindex_radar(
+    file_index = create_fileindex_radar(
         parameter=RadarParameter.RADOLAN_GRID,
         time_resolution=TimeResolution.HOURLY,
         period_type=PeriodType.HISTORICAL,
@@ -212,7 +216,7 @@ def test_radar_fileindex_grid_hourly_historical():
 
 def test_radar_fileindex_grid_5minutes():
 
-    file_index = _create_fileindex_radar(
+    file_index = create_fileindex_radar(
         parameter=RadarParameter.RADOLAN_GRID,
         time_resolution=TimeResolution.MINUTE_5,
     )
@@ -226,4 +230,54 @@ def test_radar_fileindex_grid_5minutes():
         )
         for url in urls
         if not url.endswith(".tar.gz")
+    )
+
+
+def test_radar_fileindex_radolan_grid_daily():
+
+    file_index = create_fileindex_radolan_grid(
+        time_resolution=TimeResolution.DAILY,
+    )
+
+    urls = file_index["FILENAME"].tolist()
+    assert any(
+        PurePath(url).match(
+            "*/climate_environment/CDC/grids_germany/daily/radolan/recent/bin/*---bin.gz"
+        )
+        for url in urls
+    )
+    assert any(
+        PurePath(url).match(
+            "*/climate_environment/CDC/grids_germany/daily/radolan/historical/bin/*/SF*.tar.gz"
+        )
+        for url in urls
+    )
+
+    assert file_index[DWDMetaColumns.DATETIME.value].values[0] == pd.Timestamp(
+        "2006-10-28T00:00:00.000000000"
+    )
+
+
+def test_radar_fileindex_radolan_grid_hourly():
+
+    file_index = create_fileindex_radolan_grid(
+        time_resolution=TimeResolution.HOURLY,
+    )
+
+    urls = file_index["FILENAME"].tolist()
+    assert any(
+        PurePath(url).match(
+            "*/climate_environment/CDC/grids_germany/hourly/radolan/recent/bin/*---bin.gz"
+        )
+        for url in urls
+    )
+    assert any(
+        PurePath(url).match(
+            "*/climate_environment/CDC/grids_germany/hourly/radolan/historical/bin/*/RW*.tar.gz"
+        )
+        for url in urls
+    )
+
+    assert file_index[DWDMetaColumns.DATETIME.value].values[0] == pd.Timestamp(
+        "2005-06-28T00:00:00.000000000"
     )
