@@ -6,7 +6,7 @@ from io import BytesIO
 from pathlib import Path
 
 from wetterdienst import DWDRadarRequest, TimeResolution
-from wetterdienst.dwd.radar.metadata import RadarParameter, RadarDate
+from wetterdienst.dwd.radar.metadata import RadarParameter, RadarDate, RadarDataType
 from wetterdienst.dwd.radar.sites import RadarSite
 
 HERE = Path(__file__).parent
@@ -110,3 +110,23 @@ def test_radar_request_dx_reflectivity_latest():
     header = b"DX......101320920BY.....VS 2CO0CD4CS0EP0.80.80.80.80.80.80.80.8MS"
 
     assert re.match(header, payload)
+
+
+@pytest.mark.remote
+def test_radar_request_sweep_hdf5_latest():
+    """
+    Example for testing radar SITES latest,
+    this time in OPERA HDF5 (ODIM_H5) format.
+    """
+
+    request = DWDRadarRequest(
+        radar_parameter=RadarParameter.SWEEP_VOL_PRECIPITATION_V,
+        date_times=RadarDate.LATEST.value,
+        radar_site=RadarSite.BOO,
+        radar_data_type=RadarDataType.HDF5,
+    )
+
+    buffer = next(request.collect_data())[1]
+    payload = buffer.getvalue()
+
+    assert payload.startswith(b'\x89HDF\r\n')

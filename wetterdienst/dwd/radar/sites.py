@@ -1,5 +1,7 @@
 from enum import Enum
 
+# https://docs.wradlib.org/en/stable/notebooks/radolan/radolan_network.html
+
 """ metadata about radar sites """
 RADAR_LOCATIONS = {
     "asb": {

@@ -119,9 +119,14 @@ def _collect_generic_radar_data(
     )
 
     # Find latest file.
-    latest_file = list(
-        filter(lambda x: "-latest-" in x, file_index["FILENAME"].tolist())
-    )[0]
+    filenames = file_index["FILENAME"].tolist()
+
+    try:
+        latest_file = list(
+            filter(lambda x: "-latest-" in x, filenames)
+        )[0]
+    except IndexError:
+        latest_file = filenames[-1]
 
     # Make up single-entry response.
     # TODO: Discuss which datetime to use here.

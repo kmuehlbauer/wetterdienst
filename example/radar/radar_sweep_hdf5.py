@@ -2,16 +2,12 @@
 =====
 About
 =====
-Example for DWD radar sites DX using wetterdienst and wradlib.
-
-The German Weather Service uses the DX file format to encode
-local radar sweeps. DX data are in polar coordinates.
+Example for DWD radar sites OPERA HDF5 (ODIM_H5) format using wetterdienst and wradlib.
 
 See also:
-- https://docs.wradlib.org/en/stable/notebooks/fileio/wradlib_radar_formats.html#German-Weather-Service:-DX-format
-- https://docs.wradlib.org/en/stable/notebooks/fileio/wradlib_reading_dx.html
+- https://docs.wradlib.org/en/stable/notebooks/fileio/wradlib_radar_formats.html#OPERA-HDF5-(ODIM_H5)
 
-This program will request the latest RADAR DX data
+This program will request the latest RADAR SWEEP_VOL_PRECIPITATION_V data
 for Boostedt and plot the outcome with matplotlib.
 
 
@@ -31,7 +27,7 @@ import numpy as np
 import wradlib as wrl
 import matplotlib.pyplot as pl
 
-from wetterdienst.dwd.radar.metadata import RadarParameter, RadarDate
+from wetterdienst.dwd.radar.metadata import RadarParameter, RadarDate, RadarDataType
 from wetterdienst.dwd.radar.sites import RadarSite
 
 logging.basicConfig(level=logging.INFO)
@@ -46,28 +42,28 @@ def plot(data: np.ndarray):
     """
 
     fig = pl.figure(figsize=(10, 8))
-    im = wrl.vis.plot_ppi(data, fig=fig, proj='cg')
+    im = wrl.vis.plot_ppi(data['dataset1/data1/data'], fig=fig, proj='cg')
 
 
-def radar_info(data: np.ndarray, metadata: dict):
+def radar_info(data: dict):
     """
-    Display metadata from radara request.
+    Display data from radar request.
     """
-    log.info("Data shape: %s", data.shape)
-    #log.info("Metadata: %s", metadata)
+    print("Keys:", data.keys())
 
-    log.info("Metadata")
-    for key, value in metadata.items():
+    log.info("Data")
+    for key, value in data.items():
         print(f"- {key}: {value}")
 
 
-def radar_dx_example():
+def radar_hdf5_example():
 
-    log.info("Acquiring radar DX data")
+    log.info("Acquiring radar sweep data in HDF5")
     request = DWDRadarRequest(
-        radar_parameter=RadarParameter.DX_REFLECTIVITY,
+        radar_parameter=RadarParameter.SWEEP_VOL_PRECIPITATION_V,
         date_times=RadarDate.LATEST.value,
         radar_site=RadarSite.BOO,
+        radar_data_type=RadarDataType.HDF5,
     )
 
     for item in request.collect_data():
@@ -79,10 +75,11 @@ def radar_dx_example():
         log.info(f"Parsing radar data for {request.radar_site} at '{timestamp}'")
         tempfile = NamedTemporaryFile()
         tempfile.write(buffer.read())
-        data, metadata = wrl.io.read_dx(tempfile.name)
+
+        data = wrl.io.read_opera_hdf5(tempfile.name)
 
         # Output debug information.
-        radar_info(data, metadata)
+        radar_info(data)
 
         # Plot and display data.
         plot(data)
@@ -90,7 +87,7 @@ def radar_dx_example():
 
 
 def main():
-    radar_dx_example()
+    radar_hdf5_example()
 
 
 if __name__ == "__main__":
