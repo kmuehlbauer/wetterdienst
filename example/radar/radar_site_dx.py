@@ -77,9 +77,13 @@ def radar_dx_example():
 
         # Decode data using wradlib.
         log.info(f"Parsing radar data for {request.radar_site} at '{timestamp}'")
+
         tempfile = NamedTemporaryFile()
         tempfile.write(buffer.read())
         data, metadata = wrl.io.read_dx(tempfile.name)
+
+        # FIXME: Make this work.
+        #data, metadata = wrl.io.read_dx(buffer.read())
 
         # Output debug information.
         radar_info(data, metadata)

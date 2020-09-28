@@ -73,10 +73,13 @@ def radar_hdf5_example():
 
         # Decode data using wradlib.
         log.info(f"Parsing radar data for {request.radar_site} at '{timestamp}'")
+
         tempfile = NamedTemporaryFile()
         tempfile.write(buffer.read())
-
         data = wrl.io.read_opera_hdf5(tempfile.name)
+
+        # FIXME: Make this work.
+        #data = wrl.io.read_opera_hdf5(buffer.read())
 
         # Output debug information.
         radar_info(data)
