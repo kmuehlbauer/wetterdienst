@@ -23,7 +23,7 @@ from wetterdienst.dwd.radar.sites import RadarSite
 from wetterdienst.dwd.radar.store import restore_radar_data, store_radar_data
 from wetterdienst.dwd.metadata.column_names import DWDMetaColumns
 from wetterdienst.dwd.metadata.datetime import DatetimeFormat
-from wetterdienst.util.cache import payload_cache_twelve_hours
+from wetterdienst.util.cache import payload_cache_twelve_hours, payload_cache_five_minutes
 
 log = logging.getLogger(__name__)
 
@@ -127,10 +127,25 @@ def _collect_generic_radar_data(
     # TODO: Discuss which datetime to use here.
     # TODO: Maybe decode timestamp from file header, e.g. RX272355, RW272250, DX280005
     now = datetime.now()
-    payload = download_file_from_dwd(latest_file)
+    payload = _download_generic_data(latest_file)
     response = [(now, payload)]
 
     return response
+
+
+@payload_cache_five_minutes.cache_on_arguments()
+def _download_generic_data(url: str) -> BytesIO:
+    """
+    Function (cached) that downloads radar data.
+
+    Args:
+        url: The URL to the file on the DWD server
+
+    Returns:
+        the file in binary, either an archive of one file or an archive of multiple
+        files
+    """
+    return download_file_from_dwd(url)
 
 
 def _collect_radolan_grid_data(
